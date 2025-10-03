@@ -1,0 +1,6 @@
+flatpak:
+  default_scope: user
+  present:
+    - app/dev.zed.Zed/x86_64/stable
+    - id: app/org.pulseaudio.pavucontrol/x86_64/stable
+      scope: system
