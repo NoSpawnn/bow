@@ -5,6 +5,8 @@
 ## Features
 
 - Declaratively manage user-level packages from many different sources (Flatpak, AppImage, your system package manager, or just raw binaries!)
+- Manage your dotfiles via symlinks
+    - Drop in replacement for [GNU Stow](https://www.gnu.org/software/stow/) (this is a huge goal)
 - Modes to either just install what you list or idempotent-ly manage your packages by removing any (user) packages that are installed but not listed in your config
 - Super simple config through a single YAML file
 
