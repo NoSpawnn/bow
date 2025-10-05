@@ -5,18 +5,20 @@ pub struct FlatpakProvider {
     flatpaks: Vec<Flatpak>,
 }
 
+impl FlatpakProvider {
+    fn new_with_flatpaks(flatpaks: Vec<Flatpak>) -> Self {
+        Self { flatpaks }
+    }
+}
+
 impl<'de> Deserialize<'de> for FlatpakProvider {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        if let Ok(entries) = Vec::<String>::deserialize(deserializer) {
-            Ok(Self {
-                flatpaks: entries.iter().map(|id| Flatpak::new(id)).collect(),
-            })
-        } else {
-            todo!()
-        }
+        let flatpaks = Vec::<Flatpak>::deserialize(deserializer)?;
+
+        Ok(Self::new_with_flatpaks(flatpaks))
     }
 }
 
