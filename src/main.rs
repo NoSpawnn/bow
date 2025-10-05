@@ -23,7 +23,7 @@ struct Config {
 fn main() -> std::io::Result<()> {
     let f = fs::read_to_string("./bow.yaml").unwrap();
 
-    match serde_saphyr::from_str(&f) {
+    match serde_yaml_bw::from_str(&f) {
         Ok(Config { mode, packages }) => {
             if let Some(packages) = packages {
                 packages.install(mode)?

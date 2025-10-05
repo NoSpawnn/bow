@@ -5,6 +5,5 @@ edition = "2024"
 
 [dependencies]
 serde = "1.0.228"
-serde-saphyr = "0.0.4"
+serde_yaml_bw = "2.4.1"
 strum = { version = "0.27.2", features = ["derive"] }
-yaml-rust2 = "0.10.4"

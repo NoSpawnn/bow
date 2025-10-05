@@ -6,7 +6,7 @@ packages:
     - dev.zed.Zed
 
   binary:
-    install_path: $HOME/.local/bin
+    install_folder: $HOME/.local/bin
     packages:
       - name: kubectl
         url: https://dl.k8s.io/release/{{ version }}/bin/linux/amd64/kubectl

@@ -74,7 +74,7 @@ impl PackagesConfig {
                 RunMode::Imperative => binaries.install_items(&binaries.binaries)?,
             }
         }
-
+        return Ok(());
         if let Some(flatpaks) = &self.flatpaks {
             match mode {
                 RunMode::Idempotent => flatpaks.ensure()?,
