@@ -7,12 +7,30 @@ use std::fs;
 use crate::package_types::PackagesConfig;
 
 #[derive(Debug, Deserialize)]
+enum RunMode {
+    #[serde(rename = "idempotent")]
+    Idempotent,
+    #[serde(rename = "imperative")]
+    Imperative,
+}
+
+#[derive(Debug, Deserialize)]
 struct Config {
+    mode: RunMode,
     packages: Option<PackagesConfig>,
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let f = fs::read_to_string("./bow.yaml").unwrap();
-    let c: Result<Config, _> = serde_saphyr::from_str(&f);
-    c.unwrap().packages.unwrap().install_all();
+
+    match serde_saphyr::from_str(&f) {
+        Ok(Config { mode, packages }) => {
+            if let Some(packages) = packages {
+                packages.install(mode)?
+            }
+        }
+        Err(e) => eprintln!("{e}"),
+    }
+
+    Ok(())
 }

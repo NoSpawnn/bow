@@ -1,7 +1,10 @@
+mode: imperative
+
 packages:
   flatpak:
-    - app/dev.zed.Zed/x86_64/stable
+    - app.zen_browser.zen
+    - dev.zed.Zed
 
-  binary:
-    - name: kubectl
-      url: https://dl.k8s.io/release/v1.34.1/bin/linux/amd64/kubectl
+  #binary:
+  #  - name: kubectl
+  #    url: https://dl.k8s.io/release/v1.34.1/bin/linux/amd64/kubectl
