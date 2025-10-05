@@ -6,6 +6,7 @@
 
 - Declaratively manage user-level packages from many different sources (Flatpak, AppImage, your system package manager, or just raw binaries!)
 - Modes to either just install what you list or idempotent-ly manage your packages by removing any (user) packages that are installed but not listed in your config
+- Super simple config through a single YAML file
 
 ## Supported package providers
 
