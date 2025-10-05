@@ -9,6 +9,7 @@
     - Drop in replacement for [GNU Stow](https://www.gnu.org/software/stow/) (this is a huge goal)
 - Modes to either just install what you list or idempotent-ly manage your packages by removing any (user) packages that are installed but not listed in your config
 - Super simple config through a single YAML file
+- Oh and it's written in rust :3
 
 ## Supported package providers
 
@@ -19,3 +20,4 @@
 - [ ] AppImage
 - [ ] System package management
 - [ ] Snap maybe? Idk I've literally never used snaps
+- [ ] Dotfiles (symlinking files to `$HOME`)
