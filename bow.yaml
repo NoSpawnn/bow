@@ -5,6 +5,10 @@ packages:
     - app.zen_browser.zen
     - dev.zed.Zed
 
-  #binary:
-  #  - name: kubectl
-  #    url: https://dl.k8s.io/release/v1.34.1/bin/linux/amd64/kubectl
+  binary:
+    install_path: $HOME/.local/bin
+    packages:
+      - name: kubectl
+        url: https://dl.k8s.io/release/{{ version }}/bin/linux/amd64/kubectl
+        sum: https://dl.k8s.io/release/{{ version }}/bin/linux/amd64/kubectl.sha256
+        version: v1.34.1

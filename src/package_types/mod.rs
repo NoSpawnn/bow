@@ -1,4 +1,9 @@
-use std::{collections::HashSet, hash::Hash, io::Write};
+use std::{
+    collections::HashSet,
+    fmt::{Debug, Display},
+    hash::Hash,
+    io::Write,
+};
 
 use serde::Deserialize;
 
@@ -30,7 +35,7 @@ pub trait PackageProvider {
         println!("[{}] {}", Self::LOG_PREFIX, msg);
     }
 
-    fn log_err(err: impl std::error::Error) {
+    fn log_err(err: impl Debug + Display) {
         eprintln!("[{}] {}", Self::LOG_PREFIX, err)
     }
 
@@ -65,8 +70,8 @@ impl PackagesConfig {
     pub fn install(&self, mode: RunMode) -> std::io::Result<()> {
         if let Some(binaries) = &self.binaries {
             match mode {
-                RunMode::Idempotent => todo!(),
-                RunMode::Imperative => todo!(),
+                RunMode::Idempotent => binaries.ensure()?,
+                RunMode::Imperative => binaries.install_items(&binaries.binaries)?,
             }
         }
 
