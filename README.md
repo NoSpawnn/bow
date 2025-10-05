@@ -1,6 +1,5 @@
 # Bow - Stow on steriods
-
-<small>(it's pronounced "bow" as in like, the archery thing)</small>
+ > It's pronounced "bow" as in like, the archery thing
 
 ## Features
 
@@ -14,11 +13,51 @@
 
 ## Supported package providers
 
-<small>(This is a checklist for now)</small>
+> This is a checklist for now
 
-- [ ] Flatpak (in progress)
+- [x] Flatpak (basically fully working, but more features to come perchance)
 - [ ] Binaries (in progress)
 - [ ] AppImage
 - [ ] System package management
 - [ ] Snap maybe? Idk I've literally never used snaps
 - [ ] Dotfiles (symlinking files to `$HOME`)
+
+## Usage
+
+> (very WIP, more like "planned usage", doesn't quite work like this yet)
+
+- Create a file named `bow.yaml` with contents as per the below example
+
+```yaml
+# `imperative` or `idempotent`
+#   imperative will simply attempt to install the packges declared in this file
+#   idempotent will prompt to remove any user-level packages *not* declared in this file
+mode: imperative
+
+# define your packages here under their respective provider
+packages:
+    # a list of flatpak IDs
+    flatpak:
+        - app.zen_browser.zen
+        - dev.zed.Zed
+
+    # raw binaries, define the default install folder and then binaries follow
+    #   package entry -
+    #     (required)  name: name of the final binary/used for identification
+    #     (required)  url: source URL to pull the binary from (can use {{ version }} which will be substituted in)
+    #     (optional)  sum: checksum URL to pull the binary checksum file from (can use {{ version }} which will be substituted in)
+    #     (optional*) version: version of the binary, required if {{ version }} is used in either `url` or `sum`, can be any arbitrary string
+    binary:
+        install_folder: $HOME/.local/bin
+        packages:
+            - name: kubectl
+              url: https://dl.k8s.io/release/{{ version }}/bin/linux/amd64/kubectl
+              sum: https://dl.k8s.io/release/{{ version }}/bin/linux/amd64/kubectl.sha256
+              version: v1.34.1
+```
+
+- Run bow with the above yaml
+
+```sh
+bow bow.yaml
+```
