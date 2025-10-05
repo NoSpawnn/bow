@@ -1,0 +1,7 @@
+packages:
+  flatpak:
+    - app/dev.zed.Zed/x86_64/stable
+
+  binary:
+    - name: kubectl
+      url: https://dl.k8s.io/release/v1.34.1/bin/linux/amd64/kubectl

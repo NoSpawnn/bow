@@ -1,26 +1,18 @@
-mod error;
-mod providers;
-mod yamlrepr;
+mod package_types;
 
-pub use error::Error;
+use serde::Deserialize;
 
 use std::fs;
-pub use yamlrepr::CommonKeys;
 
-use yaml_rust2::YamlLoader;
+use crate::package_types::PackagesConfig;
 
-use crate::{
-    providers::{Provider, flatpak},
-    yamlrepr::YamlRepr,
-};
+#[derive(Debug, Deserialize)]
+struct Config {
+    packages: Option<PackagesConfig>,
+}
 
 fn main() {
-    let f = fs::read_to_string("./packages.yaml").unwrap();
-    let docs = YamlLoader::load_from_str(&f).unwrap();
-    let doc = &docs[0];
-
-    let mut fpb = flatpak::FlatpakProvider::new();
-    let res = fpb.parse_yaml(&doc[flatpak::Flatpak::YAML_KEY]);
-
-    dbg!(&fpb.desired_present_items);
+    let f = fs::read_to_string("./bow.yaml").unwrap();
+    let c: Result<Config, _> = serde_saphyr::from_str(&f);
+    dbg!(c);
 }
