@@ -14,5 +14,5 @@ struct Config {
 fn main() {
     let f = fs::read_to_string("./bow.yaml").unwrap();
     let c: Result<Config, _> = serde_saphyr::from_str(&f);
-    dbg!(c);
+    c.unwrap().packages.unwrap().install_all();
 }
