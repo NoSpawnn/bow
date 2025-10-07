@@ -1,4 +1,7 @@
+mod error;
 mod package_types;
+
+use error::Result;
 
 use serde::Deserialize;
 
@@ -20,7 +23,7 @@ struct Config {
     packages: Option<PackagesConfig>,
 }
 
-fn main() -> std::io::Result<()> {
+fn main() -> crate::Result<()> {
     let f = fs::read_to_string("./bow.yaml").unwrap();
 
     match serde_yaml_bw::from_str(&f) {

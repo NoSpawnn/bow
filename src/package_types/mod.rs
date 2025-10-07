@@ -19,10 +19,10 @@ pub trait PackageProvider {
     type Item: Eq + Hash + Clone;
     const LOG_PREFIX: &'static str;
 
-    fn install_items(&self, items: &[Self::Item]) -> std::io::Result<()>;
-    fn remove_items(&self, items: &[Self::Item]) -> std::io::Result<()>;
-    fn ensure(&self) -> std::io::Result<()>;
-    fn get_installed(&self) -> std::io::Result<Vec<Self::Item>>;
+    fn install_items(&self, items: &[Self::Item]) -> crate::Result<()>;
+    fn remove_items(&self, items: &[Self::Item]) -> crate::Result<()>;
+    fn ensure(&self) -> crate::Result<()>;
+    fn get_installed(&self) -> crate::Result<Vec<Self::Item>>;
 
     fn diff(v1: &[Self::Item], v2: &[Self::Item]) -> Option<Vec<Self::Item>> {
         let s1: HashSet<_> = v1.iter().collect();
@@ -39,7 +39,7 @@ pub trait PackageProvider {
         eprintln!("[{}] {}", Self::LOG_PREFIX, err)
     }
 
-    fn confirm(msg: &str) -> std::io::Result<bool> {
+    fn confirm(msg: &str) -> crate::Result<bool> {
         loop {
             print!("[{}] {} [y/N]: ", Self::LOG_PREFIX, msg);
             std::io::stdout().flush()?;
@@ -67,14 +67,14 @@ pub struct PackagesConfig {
 }
 
 impl PackagesConfig {
-    pub fn install(&self, mode: RunMode) -> std::io::Result<()> {
+    pub fn install(&self, mode: RunMode) -> crate::Result<()> {
         if let Some(binaries) = &self.binaries {
             match mode {
                 RunMode::Idempotent => binaries.ensure()?,
                 RunMode::Imperative => binaries.install_items(&binaries.binaries)?,
             }
         }
-        return Ok(());
+
         if let Some(flatpaks) = &self.flatpaks {
             match mode {
                 RunMode::Idempotent => flatpaks.ensure()?,

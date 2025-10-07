@@ -30,7 +30,7 @@ impl PackageProvider for FlatpakProvider {
     type Item = Flatpak;
     const LOG_PREFIX: &'static str = "flatpak";
 
-    fn install_items(&self, items: &[Self::Item]) -> std::io::Result<()> {
+    fn install_items(&self, items: &[Self::Item]) -> crate::Result<()> {
         let ids: Vec<&str> = items.iter().map(|f| f.id.as_str()).collect();
         let mut cmd = std::process::Command::new("flatpak");
         cmd.args(["install", "--noninteractive", "--user"]);
@@ -69,7 +69,7 @@ impl PackageProvider for FlatpakProvider {
         Ok(())
     }
 
-    fn remove_items(&self, items: &[Self::Item]) -> std::io::Result<()> {
+    fn remove_items(&self, items: &[Self::Item]) -> crate::Result<()> {
         let ids: Vec<&str> = items.iter().map(|f| f.id.as_str()).collect();
         let mut cmd = std::process::Command::new("flatpak");
         cmd.args(["remove", "--noninteractive", "--user"]);
@@ -108,7 +108,7 @@ impl PackageProvider for FlatpakProvider {
         Ok(())
     }
 
-    fn ensure(&self) -> std::io::Result<()> {
+    fn ensure(&self) -> crate::Result<()> {
         let installed = self.get_installed()?;
 
         if let Some(to_install) = Self::diff(&self.flatpaks, &installed) {
@@ -150,7 +150,7 @@ impl PackageProvider for FlatpakProvider {
         Ok(())
     }
 
-    fn get_installed(&self) -> std::io::Result<Vec<Self::Item>> {
+    fn get_installed(&self) -> crate::Result<Vec<Self::Item>> {
         let mut cmd = std::process::Command::new("flatpak");
         cmd.args(["list", "--user", "--columns=application:f", "--app"]);
         let output = cmd.output()?;
