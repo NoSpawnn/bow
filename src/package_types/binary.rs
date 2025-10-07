@@ -91,7 +91,7 @@ impl PackageProvider for BinaryProvider {
 
             Self::log_msg(&format!("Successfully installed {}", &binary.name));
 
-            let info = serde_yaml_bw::to_string(&binary).or_else(|e| {
+            let info = serde_yaml_bw::to_string(&[&binary]).or_else(|e| {
                 Err(std::io::Error::new(
                     std::io::ErrorKind::InvalidData,
                     format!("failed to write info yaml for {}: {e}", &binary.name),
