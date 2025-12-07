@@ -35,7 +35,7 @@ fatal() {
 #   None
 #######################################
 ensure_requirements() {
-  local required_cli_binaries=("curl" "envsubst")
+  local required_cli_binaries=("yq" "curl" "envsubst")
   local missing=()
 
   for b in "${required_cli_binaries[@]}"; do
