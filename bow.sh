@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# ------- #
+# Globals #
+# ------- #
+
 DRY_RUN=0
 
 # ------------------------- #
@@ -13,6 +17,36 @@ DRY_RUN=0
 #######################################
 err() {
   echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" >&2
+}
+
+#######################################
+# Spit out a formatted error message to stderr with a timestamp and quits
+# Arguments:
+#   $1 - error message
+#######################################
+fatal() {
+  err "$1"
+  exit 1
+}
+
+#######################################
+# Ensure required CLI binaries are install, otherwise quit
+# Arguments:
+#   None
+#######################################
+ensure_requirements() {
+  local required_cli_binaries=("curl" "envsubst")
+  local missing=()
+
+  for b in "${required_cli_binaries[@]}"; do
+    if ! command -v "$b" &>/dev/null; then
+      missing+=("$b")
+    fi
+  done
+
+  if [[ "${#missing[@]}" -gt 0 ]]; then
+    fatal "Missing required binaries: ${missing[@]}"
+  fi
 }
 
 # ---------------------- #
@@ -86,6 +120,47 @@ install_flatpaks() {
     fi
 }
 
+#######################################
+# Install CLI binaries based on information in a YAML file
+# Arguments:
+#   $1 - yaml file relative to this script to read from
+#######################################
+install_binaries() {
+  local tmp="$(mktemp -d)"
+  local install_dir="$HOME/.local/bin"
+  local -A bins_to_install
+
+  local yqexpr_object_binaries='
+    .binary.[] |
+    [ .name, .url, .version ] |
+    join("|")
+  '
+  while IFS='|' read -r bin_name bin_url bin_version; do
+    local downloaded_file="$tmp/$bin_name"
+
+    if [[ "$bin_url" == *'$VERSION'* ]]; then
+      if [[ -z "$bin_version" ]]; then
+        fatal "\$VERSION is used in URL for $bin_name but version has not been specified"
+      else
+        bin_url="$(VERSION="$bin_version" envsubst '$VERSION' < <(echo "$bin_url"))"
+      fi
+    fi
+
+    bins_to_install["$bin_name"]="$bin_url"
+  done < <(yq eval "$yqexpr_object_binaries" < "$1")
+
+  if [[ "$DRY_RUN" == 1 ]]; then
+    echo "Would install ${#bins_to_install[@]} binaries"
+    for key in "${!bins_to_install[@]}"; do
+      value="${bins_to_install[$key]}"
+      printf '    %s from %s\n' "$key" "$value"
+    done
+  else
+    curl -sL "$bin_url" > "$downloaded_file"
+    cp "$downloaded_file" .
+  fi
+}
+
 # ---- #
 # Exec #
 # ---- #
@@ -102,18 +177,17 @@ main() {
   local yaml_file="$1"
 
   if [[ ! -e "$yaml_file" ]]; then
-    err "$yaml_file does not exist"
-    exit 1
+    fatal "$yaml_file does not exist"
   elif [[ ! -f "$yaml_file" ]]; then
-    err "$yaml_file is not a file"
-    exit 1
+    fatal "$yaml_file is not a file"
   elif ! yq eval "$yaml_file" &>/dev/null; then
     # there's gotta be a nicer way to do this? where's my if let...
-    err "$(yq eval \"$yaml_file\")"
-    exit 1
+    fatal "$(yq eval $yaml_file)"
   fi
 
-  install_flatpaks $yaml_file
+  ensure_requirements
+  # install_flatpaks $yaml_file
+  install_binaries $yaml_file
 }
 
 main "$@"
