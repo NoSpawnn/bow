@@ -62,3 +62,8 @@ packages:
 ```sh
 bow bow.yaml
 ```
+
+## Development
+
+- I'm _loosely_ following [Google's shell styleguide](https://google.github.io/styleguide/shellguide.htmls)
+- And I want to kiss devhints.io for their [bash scripting cheatsheet](https://devhints.io/bash)
