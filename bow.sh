@@ -180,9 +180,8 @@ main() {
     fatal "$yaml_file does not exist"
   elif [[ ! -f "$yaml_file" ]]; then
     fatal "$yaml_file is not a file"
-  elif ! yq eval "$yaml_file" &>/dev/null; then
-    # there's gotta be a nicer way to do this? where's my if let...
-    fatal "$(yq eval $yaml_file)"
+  elif ! yaml_error="$(yq eval '.' "$yaml_file" 2>&1 >/dev/null)"; then
+    fatal "$yaml_error"
   fi
 
   ensure_requirements
