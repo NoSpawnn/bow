@@ -1,0 +1,9 @@
+flatpak:
+  default_scope: user
+  present:
+    - com.valvesoftware.Steam
+    - id: app.zen_browser.zen
+      scope: system
+    - net.davidotek.pupgui2
+    - id: com.bitwarden.desktop
+      scope: system
