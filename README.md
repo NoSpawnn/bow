@@ -45,15 +45,15 @@ packages:
     # raw binaries, define the default install folder and then binaries follow
     #   package entry -
     #     (required)  name: name of the final binary/used for identification
-    #     (required)  url: source URL to pull the binary from (can use {{ version }} which will be substituted in)
-    #     (optional)  sum: checksum URL to pull the binary checksum file from (can use {{ version }} which will be substituted in)
-    #     (optional*) version: version of the binary, required if {{ version }} is used in either `url` or `sum`, can be any arbitrary string
+    #     (required)  url: source URL to pull the binary from (can use $VERSION which will be substituted in)
+    #     (optional)  sum: checksum URL to pull the binary checksum file from (can use $VERSION which will be substituted in)
+    #     (optional*) version: version of the binary, required if $VERSION is used in either `url` or `sum`, can be any arbitrary string
     binary:
         install_folder: $HOME/.local/bin
         packages:
             - name: kubectl
-              url: https://dl.k8s.io/release/{{ version }}/bin/linux/amd64/kubectl
-              sum: https://dl.k8s.io/release/{{ version }}/bin/linux/amd64/kubectl.sha256
+              url: https://dl.k8s.io/release/$VERSION/bin/linux/amd64/kubectl
+              sum: https://dl.k8s.io/release/$VERSION/bin/linux/amd64/kubectl.sha256
               version: v1.34.1
 ```
 
