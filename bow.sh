@@ -105,7 +105,7 @@ main() {
     err "$yaml_file does not exist"
     exit 1
   elif [[ ! -f "$yaml_file" ]]; then
-    err "$yaml_file" is not a file
+    err "$yaml_file is not a file"
     exit 1
   elif ! yq eval "$yaml_file" &>/dev/null; then
     # there's gotta be a nicer way to do this? where's my if let...
