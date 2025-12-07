@@ -165,17 +165,16 @@ install_binaries() {
 # Exec #
 # ---- #
 
-while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do
-  case "$1" in
-    -d | --dry-run ) DRY_RUN=1 ;;
-  esac
-  shift
-done
-if [[ "$1" == '--' ]]; then shift; fi
-
 main() {
-  local yaml_file="$1"
+  while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do
+    case "$1" in
+      -d | --dry-run ) DRY_RUN=1 ;;
+    esac
+    shift
+  done
+  if [[ "$1" == '--' ]]; then shift; fi # I don't need this, but it doesn't hurt
 
+  local yaml_file="$1"
   if [[ ! -e "$yaml_file" ]]; then
     fatal "$yaml_file does not exist"
   elif [[ ! -f "$yaml_file" ]]; then
