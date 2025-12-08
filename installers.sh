@@ -86,7 +86,6 @@ install::binaries() {
     join("|")
   '
   while IFS='|' read -r bin_name bin_url bin_version bin_archivepath; do
-
     if [[ "$bin_url" == *'$VERSION'* ]]; then
       if [[ -z "$bin_version" ]]; then
         fatal "\$VERSION is used in URL for $bin_name but version has not been specified"
@@ -103,6 +102,28 @@ install::binaries() {
 
     local bin_url="${bins_to_install["$bin_name"]}"
     local install_path="$install_dir/$bin_name"
+
+    if [[ -f "$install_path" ]]; then
+      local overwrite
+      while true; do
+        read -p "Binary for $bin_name already exists at $install_path, overwrite? (y/N): " -rn 1 overwrite < /dev/tty
+
+        if [[ -z "$overwrite" ]]; then
+          overwrite="n"
+          break
+        elif [[ "$overwrite" =~ ^[nNyY]$ ]]; then
+          echo
+          break
+        else
+          echo
+        fi
+      done
+
+      if [[ "$overwrite" =~ ^[nN]$ ]]; then
+        continue
+      fi
+    fi
+
     local tmp="$(mktemp -d)"
     local tmp_path="$tmp/$bin_name"
 
@@ -112,8 +133,8 @@ install::binaries() {
     local archive_type="${bin_url##*.}"
     case "$archive_type" in
       "zip")
-        unzip "$tmp_path" -d "$install_dir"
-        ln -s "$install_dir/$bin_archivepath" "$install_path"
+        unzip -o "$tmp_path" -d "$install_dir"
+        ln -sf "$install_dir/$bin_archivepath" "$install_path"
       ;;
       "") # empty string, not an archive, just move the downloaded binary
         mv "$tmp_path" "$install_path"

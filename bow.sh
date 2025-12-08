@@ -56,6 +56,10 @@ ensure_requirements() {
 main() {
   source ./installers.sh
 
+  if [[ "$?" != 0 ]]; then
+    fatal "Failed to source installers.sh"
+  fi
+
   while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do
     case "$1" in
       -d | --dry-run ) DRY_RUN=1 ;;
