@@ -1,7 +1,7 @@
 binary:
   - name: awscli
     url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
-    archive: zip
+    archive_path: aws/dist/aws
   - name: kubectl
     url: https://dl.k8s.io/release/$VERSION/bin/linux/amd64/kubectl
     sum: https://dl.k8s.io/release/$VERSION/bin/linux/amd64/kubectl.sha256

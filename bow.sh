@@ -126,17 +126,15 @@ install_flatpaks() {
 #   $1 - yaml file relative to this script to read from
 #######################################
 install_binaries() {
-  local tmp="$(mktemp -d)"
   local install_dir="$HOME/.local/bin"
   local -A bins_to_install
 
   local yqexpr_object_binaries='
     .binary.[] |
-    [ .name, .url, .version ] |
+    [ .name, .url, .version, .archive_path ] |
     join("|")
   '
-  while IFS='|' read -r bin_name bin_url bin_version; do
-    local downloaded_file="$tmp/$bin_name"
+  while IFS='|' read -r bin_name bin_url bin_version bin_archivepath; do
 
     if [[ "$bin_url" == *'$VERSION'* ]]; then
       if [[ -z "$bin_version" ]]; then
@@ -147,6 +145,37 @@ install_binaries() {
     fi
 
     bins_to_install["$bin_name"]="$bin_url"
+
+    if [[ "$DRY_RUN" == 1 ]]; then continue; fi
+
+    mkdir -p "$install_dir"
+
+    local bin_url="${bins_to_install["$bin_name"]}"
+    local install_path="$install_dir/$bin_name"
+    local tmp="$(mktemp -d)"
+    local tmp_path="$tmp/$bin_name"
+
+    echo "Downloading $bin_name from $bin_url"
+    curl -fSL --progress-bar "$bin_url" -o "$tmp_path"
+
+    local archive_type="${bin_url##*.}"
+    case "$archive_type" in
+      "zip")
+        unzip "$tmp_path" -d "$install_dir"
+        ln -s "$install_dir/$bin_archivepath" "$install_path"
+      ;;
+      "") # empty string, not an archive, just move the downloaded binary
+        mv "$tmp_path" "$install_path"
+      ;;
+      *)
+        fatal "Unknown archive type $archive_type"
+      ;;
+    esac
+
+    chmod +x "$install_path"
+    rm -rf "$tmp"
+
+    echo "$bin_name successfully installed to $install_path"
   done < <(yq eval "$yqexpr_object_binaries" < "$1")
 
   if [[ "$DRY_RUN" == 1 ]]; then
@@ -154,19 +183,6 @@ install_binaries() {
     for key in "${!bins_to_install[@]}"; do
       value="${bins_to_install[$key]}"
       printf '    %s from %s\n' "$key" "$value"
-    done
-  else
-    mkdir -p "$install_dir"
-
-    for bin_name in "${!bins_to_install[@]}"; do
-      local bin_url="${bins_to_install["$bin_name"]}"
-      local install_path="$install_dir/$bin_name"
-      local tmp_path="$tmp/$bin_name"
-      echo "Downloading $bin_name from $bin_url"
-
-      curl -fSL --progress-bar "$bin_url" -o "$tmp_path"
-      mv "$tmp_path" "$install_path"
-      chmod +x "$install_path"
     done
   fi
 }
