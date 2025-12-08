@@ -156,8 +156,18 @@ install_binaries() {
       printf '    %s from %s\n' "$key" "$value"
     done
   else
-    curl -sL "$bin_url" > "$downloaded_file"
-    cp "$downloaded_file" .
+    mkdir -p "$install_dir"
+
+    for bin_name in "${!bins_to_install[@]}"; do
+      local bin_url="${bins_to_install["$bin_name"]}"
+      local install_path="$install_dir/$bin_name"
+      local tmp_path="$tmp/$bin_name"
+      echo "Downloading $bin_name from $bin_url"
+
+      curl -fSL --progress-bar "$bin_url" -o "$tmp_path"
+      mv "$tmp_path" "$install_path"
+      chmod +x "$install_path"
+    done
   fi
 }
 
