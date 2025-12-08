@@ -130,8 +130,10 @@ install::binaries() {
     echo "Downloading $bin_name from $bin_url"
     curl -fSL --progress-bar "$bin_url" -o "$tmp_path"
 
-    local archive_type="${bin_url##*.}"
-    case "$archive_type" in
+    local archive_name="$(echo "$bin_url" | sed 's#^.*/##')"
+    local ext="${archive_name##*.}"
+    if [[ "$ext" == "$archive_name" ]]; then ext=""; fi
+    case "$ext" in
       "zip")
         unzip -o "$tmp_path" -d "$install_dir"
         ln -sf "$install_dir/$bin_archivepath" "$install_path"
@@ -140,7 +142,7 @@ install::binaries() {
         mv "$tmp_path" "$install_path"
       ;;
       *)
-        fatal "Unknown archive type $archive_type"
+        fatal "Unknown archive type $archive_name"
       ;;
     esac
 
