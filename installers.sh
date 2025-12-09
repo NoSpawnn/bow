@@ -62,12 +62,8 @@ install::flatpaks() {
       echo "Would install ${#flatpaks_to_install_user[@]} user flatpaks"
       printf '    %s\n' ${flatpaks_to_install_user[@]}
     else
-      for fp in "${flatpaks_to_install_system[@]}"; do
-        flatpak install --system "$fp"
-      done
-      for fp in "${flatpaks_to_install_user[@]}"; do
-        flatpak install --user "$fp"
-      done
+        flatpak install --system "${flatpaks_to_install_system[@]}"
+        flatpak install --user "${flatpaks_to_install_user[@]}"
     fi
 }
 
