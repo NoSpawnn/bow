@@ -52,7 +52,7 @@ install::flatpaks() {
     '
     while IFS='|' read -r fp_id; do
       add_to_relevant_list "$fp_id" "$default_scope"
-    done < <(yq eval "$yqexpr_simple_flatpaks" < "$1")
+    done < <(yq "$yqexpr_simple_flatpaks" < "$1")
 
     if [[ "$DRY_RUN" == 1 ]]; then
       echo "Would install ${#flatpaks_to_install_system[@]} system flatpaks"
@@ -148,7 +148,7 @@ install::binaries() {
     rm -rf "$tmp"
 
     echo "$bin_name successfully installed to $install_path"
-  done < <(yq eval "$yqexpr_object_binaries" < "$1")
+  done < <(yq "$yqexpr_object_binaries" < "$1")
 
   if [[ "$DRY_RUN" == 1 ]]; then
     echo "Would install ${#bins_to_install[@]} binaries"
