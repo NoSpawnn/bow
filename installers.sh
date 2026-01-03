@@ -11,10 +11,8 @@
 #######################################
 install::flatpaks() {
     local default_scope=$(yq '.flatpak.default_scope' < $1)
-
     if [[ ! "$default_scope" =~ ^(user|system)$ ]]; then
-      echo "Invalid default scope '$default_scope', must be one of: user, system"
-      exit 1
+      fatal "Invalid default scope '$default_scope', must be one of: user, system"
     fi
 
     local flatpaks_to_install_user=()
@@ -38,22 +36,22 @@ install::flatpaks() {
       [ .id, .scope ] |
       join("|")
     '
-    while IFS='|' read -r fp_id fp_scope; do
+    while read -r fp_id fp_scope; do
       if [[ -z "$fp_id" && ! -z "$fp_scope" ]]; then
         echo "Defining only a 'scope' is invalid"
         exit 1
+      elif [[ -n "$fp_id" && ! -n "$fp_scope" ]]; then
+        add_to_relevant_list "$fp_id" "$fp_scope"
       fi
-      add_to_relevant_list "$fp_id" "$fp_scope"
-    done < <(yq eval "$yqexpr_object_flatpaks" < "$1")
+    done < <(yq "$yqexpr_object_flatpaks" < "$1")
 
     # str entries
     local yqexpr_simple_flatpaks='
       .flatpak.present.[] |
       select(tag == "!!str")
     '
-    while read -r fp_id; do
-      local fp_scope="$default_scope"
-      add_to_relevant_list "$fp_id" "$fp_scope"
+    while IFS='|' read -r fp_id; do
+      add_to_relevant_list "$fp_id" "$default_scope"
     done < <(yq eval "$yqexpr_simple_flatpaks" < "$1")
 
     if [[ "$DRY_RUN" == 1 ]]; then
@@ -62,8 +60,12 @@ install::flatpaks() {
       echo "Would install ${#flatpaks_to_install_user[@]} user flatpaks"
       printf '    %s\n' ${flatpaks_to_install_user[@]}
     else
+      if [[ "${#flatpaks_to_install_system[@]}" -gt 0 ]]; then
         flatpak install --system "${flatpaks_to_install_system[@]}"
+      fi
+      if [[ "${#flatpaks_to_install_user[@]}" -gt 0 ]]; then
         flatpak install --user "${flatpaks_to_install_user[@]}"
+      fi
     fi
 }
 

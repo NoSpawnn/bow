@@ -73,14 +73,18 @@ main() {
     fatal "$yaml_file does not exist"
   elif [[ ! -f "$yaml_file" ]]; then
     fatal "$yaml_file is not a file"
-  elif ! yaml_error="$(yq eval '.' "$yaml_file" 2>&1 >/dev/null)"; then
+  elif ! yaml_error="$(yq '.' "$yaml_file" 2>&1 >/dev/null)"; then
     fatal "$yaml_error"
   fi
 
   ensure_requirements
 
-  install::flatpaks $yaml_file
-  install::binaries $yaml_file
+  if [[ $(yq '.flatpak' "$yaml_file") != "null" ]]; then
+    install::flatpaks $yaml_file
+  fi
+  if [[ $(yq '.binary' "$yaml_file") != "null" ]]; then
+    install::binaries $yaml_file
+  fi
 }
 
 main "$@"
